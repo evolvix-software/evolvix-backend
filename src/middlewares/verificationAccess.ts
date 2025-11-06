@@ -18,7 +18,7 @@ export interface VerificationAccessRequest extends AuthRequest {
  * Middleware to check if user has required verification level for a role
  * 
  * Access Matrix:
- * L0 (Basic): Email + Phone Verification - Limited Access, Profile Setup Only
+ * L0 (Basic): Email Verification - Limited Access, Profile Setup Only
  * L1 (ID Verified): Govt ID Upload - Course Access, Certificates
  * L2 (Role Verified): KYC + Professional/Company Docs - Mentorship, Job Posting, Investment, CSR Funding
  * L3 (Trusted/Premium): Full KYC + Address Proof + Video Verification - Entrepreneur Zone, Startup Creation, Fund Management
@@ -66,7 +66,7 @@ export const requireVerificationLevel = (
           userLevel = verification.verificationLevel;
         } else {
           // Check basic verification (L0)
-          if (user.isEmailVerified && user.phoneVerified) {
+          if (user.isEmailVerified) {
             userLevel = 0;
           }
         }
@@ -121,7 +121,7 @@ export const getUserVerificationLevel = async (
   }
 
   // Check basic verification (L0)
-  if (user.isEmailVerified && user.phoneVerified) {
+  if (user.isEmailVerified) {
     return 0;
   }
 

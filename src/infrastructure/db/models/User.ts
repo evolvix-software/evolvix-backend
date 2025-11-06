@@ -48,8 +48,6 @@ export interface IUser extends Document {
   verificationLevels?: {
     [key in UserRole]?: 0 | 1 | 2 | 3; // L0-L3 per role
   };
-  phoneNumber?: string;
-  phoneVerified?: boolean;
   
   createdAt: Date;
   updatedAt: Date;
@@ -153,11 +151,6 @@ const userSchema = new Schema<IUser>(
     verificationLevels: {
       type: Schema.Types.Mixed,
       default: {},
-    },
-    phoneNumber: String,
-    phoneVerified: {
-      type: Boolean,
-      default: false,
     },
   },
   {

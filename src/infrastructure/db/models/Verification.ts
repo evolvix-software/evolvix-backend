@@ -35,8 +35,6 @@ export interface IVerification extends Document {
   
   // Global fields - common to all roles
   country: CountryCode;
-  phoneNumber?: string;
-  phoneVerified: boolean;
   emailVerified: boolean;
   
   // Student verification fields
@@ -250,15 +248,12 @@ const VerificationSchema = new Schema<IVerification>(
       required: true,
       default: 'IN',
     },
-    phoneNumber: String,
-    phoneVerified: {
-      type: Boolean,
-      default: false,
-    },
     emailVerified: {
       type: Boolean,
       default: false,
     },
+    
+    // Note: phoneNumber fields in companyInfo and sponsorInfo are for company contact, not user verification
     
     // Student fields
     personalInfo: {

@@ -7,8 +7,6 @@ import {
   getVerificationById,
   approveVerification,
   rejectVerification,
-  verifyPhoneNumber,
-  sendPhoneOTP,
 } from '../controllers/verificationController';
 import { authenticate } from '../../middlewares/auth';
 import { authenticateAdmin } from '../../middlewares/adminAuth';
@@ -33,27 +31,6 @@ router.get(
     query('role').optional().isIn(['student', 'mentor', 'employer', 'investor', 'sponsor', 'entrepreneur']).withMessage('Invalid role'),
   ],
   getVerificationStatus
-);
-
-router.post(
-  '/phone/send-otp',
-  authenticate,
-  [
-    body('phoneNumber').notEmpty().withMessage('Phone number is required'),
-    body('phoneNumber').isMobilePhone().withMessage('Invalid phone number format'),
-  ],
-  sendPhoneOTP
-);
-
-router.post(
-  '/phone/verify',
-  authenticate,
-  [
-    body('phoneNumber').notEmpty().withMessage('Phone number is required'),
-    body('otp').notEmpty().withMessage('OTP is required'),
-    body('otp').isLength({ min: 4, max: 6 }).withMessage('OTP must be 4-6 digits'),
-  ],
-  verifyPhoneNumber
 );
 
 // Admin routes (require admin authentication)

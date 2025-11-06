@@ -46,8 +46,8 @@ export const submitVerification = asyncHandler(
     // Determine verification level based on submitted data
     let determinedLevel: VerificationLevel = 0; // L0: Basic
     
-    // L0: Email + Phone verified
-    if (user.isEmailVerified && verificationData.phoneVerified) {
+    // L0: Email verified
+    if (user.isEmailVerified) {
       determinedLevel = 0;
     }
     
@@ -281,12 +281,6 @@ export const approveVerification = asyncHandler(
       verificationLevels[verification.role] = verification.verificationLevel;
       user.verificationLevels = verificationLevels;
       
-      // Update phone verification status if provided
-      if (verification.phoneNumber && verification.phoneVerified) {
-        user.phoneNumber = verification.phoneNumber;
-        user.phoneVerified = true;
-      }
-      
       await user.save();
     }
 
@@ -347,95 +341,4 @@ export const rejectVerification = asyncHandler(
   }
 );
 
-/**
- * @route   POST /api/verification/phone/verify
- * @desc    Verify phone number with OTP
- * @access  Private
- */
-export const verifyPhoneNumber = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    if (!isMongoDBConnected()) {
-      return next(new AppError('Database connection is not available', 503));
-    }
-
-    const authReq = req as AuthRequest;
-    if (!authReq.user) {
-      return next(new AppError('Authentication required', 401));
-    }
-
-    const { phoneNumber, otp } = req.body;
-
-    if (!phoneNumber || !otp) {
-      return next(new AppError('Phone number and OTP are required', 400));
-    }
-
-    // TODO: Implement OTP verification logic (e.g., using Twilio, AWS SNS, etc.)
-    // For now, we'll simulate verification
-    // In production, verify OTP against stored OTP in database/cache
-
-    const user = await User.findById(authReq.user._id);
-    if (!user) {
-      return next(new AppError('User not found', 404));
-    }
-
-    // Update user phone verification
-    user.phoneNumber = phoneNumber;
-    user.phoneVerified = true;
-    await user.save();
-
-    // Update all pending verifications for this user
-    await Verification.updateMany(
-      { userId: user._id, phoneNumber },
-      { phoneVerified: true }
-    );
-
-    res.json({
-      success: true,
-      message: 'Phone number verified successfully',
-      data: {
-        phoneNumber,
-        phoneVerified: true,
-      },
-    });
-  }
-);
-
-/**
- * @route   POST /api/verification/phone/send-otp
- * @desc    Send OTP to phone number
- * @access  Private
- */
-export const sendPhoneOTP = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    if (!isMongoDBConnected()) {
-      return next(new AppError('Database connection is not available', 503));
-    }
-
-    const authReq = req as AuthRequest;
-    if (!authReq.user) {
-      return next(new AppError('Authentication required', 401));
-    }
-
-    const { phoneNumber } = req.body;
-
-    if (!phoneNumber) {
-      return next(new AppError('Phone number is required', 400));
-    }
-
-    // TODO: Implement OTP sending logic (e.g., using Twilio, AWS SNS, etc.)
-    // Generate OTP and send via SMS
-    // Store OTP in database/cache with expiration
-
-    // For now, return success (in production, implement actual SMS sending)
-    res.json({
-      success: true,
-      message: 'OTP sent successfully',
-      data: {
-        phoneNumber,
-        // In production, don't return OTP
-        // otp: '123456', // Only for development/testing
-      },
-    });
-  }
-);
 
