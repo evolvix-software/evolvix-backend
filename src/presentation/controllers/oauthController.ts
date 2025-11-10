@@ -60,7 +60,11 @@ export const googleAuth = asyncHandler(
     }
 
     // Redirect to frontend
-    const redirectUrl = new URL(`${config.corsOrigin}/auth/oauth/callback`);
+    // Use first origin if multiple are configured, or the single origin
+    const frontendOrigin = Array.isArray(config.corsOrigin) 
+      ? config.corsOrigin[0] 
+      : config.corsOrigin;
+    const redirectUrl = new URL(`${frontendOrigin}/auth/oauth/callback`);
     redirectUrl.searchParams.set('provider', 'google');
     
     if (!user.primaryRole || user.roles.length === 0) {

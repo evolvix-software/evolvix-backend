@@ -5,6 +5,7 @@ import User from '../../infrastructure/db/models/User';
 import { AppError, asyncHandler } from '../../middlewares/errorHandler';
 import { AuthRequest } from '../../middlewares/auth';
 import emailService from '../../application/services/emailService';
+import config from '../../config/env';
 
 interface ForgotPasswordBody {
   email: string;
@@ -78,7 +79,11 @@ export const forgotPassword = asyncHandler(
     // In development mode, also return token for testing (if email service not configured)
     if (process.env.NODE_ENV === 'development' && !emailSent) {
       response.resetToken = resetToken;
-      response.resetUrl = `${process.env.CORS_ORIGIN || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}&email=${email}`;
+      // Use first origin if multiple are configured, or the single origin
+      const frontendOrigin = process.env.CORS_ORIGIN || 
+        (Array.isArray(config.corsOrigin) ? config.corsOrigin[0] : config.corsOrigin) ||
+        'http://localhost:3000';
+      response.resetUrl = `${frontendOrigin}/auth/reset-password?token=${resetToken}&email=${email}`;
       response.message += ' (Email service not configured - token included for testing)';
     }
 

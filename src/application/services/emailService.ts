@@ -79,7 +79,10 @@ class EmailService {
   }
 
   async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
-    const resetUrl = `${process.env.FRONTEND_URL || config.corsOrigin}/auth/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
+    // Use first origin if multiple are configured, or the single origin
+    const frontendOrigin = process.env.FRONTEND_URL || 
+      (Array.isArray(config.corsOrigin) ? config.corsOrigin[0] : config.corsOrigin);
+    const resetUrl = `${frontendOrigin}/auth/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
     
     const html = `
       <!DOCTYPE html>
