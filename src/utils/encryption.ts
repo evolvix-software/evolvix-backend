@@ -54,7 +54,7 @@ export const decrypt = (encryptedText: string): string => {
     const key = getEncryptionKey();
     const data = Buffer.from(encryptedText, 'base64');
     
-    const salt = data.subarray(0, SALT_LENGTH);
+    // const salt = data.subarray(0, SALT_LENGTH);
     const iv = data.subarray(SALT_LENGTH, TAG_POSITION);
     const tag = data.subarray(TAG_POSITION, ENCRYPTED_POSITION);
     const encrypted = data.subarray(ENCRYPTED_POSITION);

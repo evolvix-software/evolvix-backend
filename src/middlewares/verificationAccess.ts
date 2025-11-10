@@ -3,7 +3,7 @@
  * Based on Global User Verification Framework
  */
 
-import { Request, Response, NextFunction } from 'express';
+import { Request, NextFunction } from 'express';
 import { AuthRequest } from './auth';
 import User from '../infrastructure/db/models/User';
 import Verification, { VerificationLevel, VerificationRole } from '../infrastructure/db/models/Verification';
@@ -27,7 +27,7 @@ export const requireVerificationLevel = (
   requiredLevel: VerificationLevel,
   role?: VerificationRole
 ) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, next: NextFunction) => {
     try {
       const authReq = req as VerificationAccessRequest;
       
